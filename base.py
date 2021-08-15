@@ -1,11 +1,15 @@
 """Base service class."""
 
+import logging
 import signal
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 from confluent_kafka import Consumer, KafkaError, KafkaException, Producer
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__file__)
 
 
 class AbstractService(ABC):
@@ -72,7 +76,8 @@ class Service(AbstractService):
                 else:
                     self.process_message(message=msg)
         finally:
-            print(f'\nStopping {self.__class__.__name__} service...')
+            logger.info(f'\nStopping {self.__class__.__name__} service...')
+            self.producer.flush()
             self.consumer.close()
 
     def stop(self, *args, **kwargs):
