@@ -4,7 +4,7 @@ import json
 from typing import Final
 
 from base import Service
-from settings import CONSUMER_CONFIG, PRODUCER_CONFIG
+from settings import PRODUCER_CONFIG, RECOMMENDATION_SERVICE_CONFIG
 
 
 class RecommendationService(Service):
@@ -18,16 +18,14 @@ class RecommendationService(Service):
     RECOMMENDATION_BUY: Final[str] = "BUY"
     RECOMMENDATION_SELL: Final[str] = "SELL"
 
-
     def process_message(self, message):
         """Process message and generate response with recommendation."""
 
         msg = json.loads(message.value())
         recommendation = self.check_recommendation(close_price=msg['close_price'])
-        print(
-            f'recommendation: {recommendation} for {msg["close_price"]} '
-            f'price with {self.average_price} average price.'
-        )
+        response = {'recommendation': recommendation}
+
+        self.produce_message(topic='recommendations', message=json.dumps(response))
 
     def check_recommendation(self, close_price: float) -> str:
         """Generate recommendation."""
@@ -47,11 +45,16 @@ class RecommendationService(Service):
         return "N/A"
 
 
-if __name__ == "__main__":
+def start_service():
+    """Run service."""
+
     service = RecommendationService(
-        consumer_config=CONSUMER_CONFIG,
+        consumer_config=RECOMMENDATION_SERVICE_CONFIG,
         producer_config=PRODUCER_CONFIG,
         consumer_topics=['stock-quotes'],
-        producer_topics=[''],
+        producer_topics=['recommendations'],
     )
     service.start()
+
+
+start_service()
