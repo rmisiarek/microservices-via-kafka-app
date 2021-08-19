@@ -7,6 +7,9 @@ authors = ["Rafał Misiarek <misiarek@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 confluent-kafka = "^1.7.0"
+fastapi = "^0.68.0"
+uvicorn = {extras = ["standard"], version = "^0.15.0"}
+aiokafka = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
