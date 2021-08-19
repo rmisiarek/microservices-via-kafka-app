@@ -4,6 +4,7 @@ import asyncio
 import logging
 import typing
 
+import uvicorn
 from aiokafka import AIOKafkaConsumer
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
@@ -100,3 +101,7 @@ class DashboardWebsocketService(WebSocketEndpoint):
         _ = topicname
         async for msg in consumer:
             return msg.value.decode()
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
