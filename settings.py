@@ -9,13 +9,10 @@ RECOMMENDATION_SERVICE_CONFIG = {
     'auto.offset.reset': 'latest',
 }
 
-DASHBOARD_SERVICE_CONFIG = {
-    'bootstrap.servers': BROKER,
-    'group.id': "dashboard-group",
-    'session.timeout.ms': 6000,
-    'auto.offset.reset': 'latest',
-}
-
 PRODUCER_CONFIG = {
     'bootstrap.servers': BROKER,
 }
+
+STOCK_QUOTES_TOPIC = 'stock-quotes'
+RECOMMENDATION_TOPIC = 'recommendations'
+DASHBOARD_TOPICS = [STOCK_QUOTES_TOPIC, RECOMMENDATION_TOPIC]
