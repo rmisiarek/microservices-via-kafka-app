@@ -16,7 +16,7 @@ from dto import StockQuote
 from settings import PRODUCER_CONFIG
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 producer = Producer(PRODUCER_CONFIG)
 
@@ -66,6 +66,7 @@ def start_producer():
                 low_price=parse_price(row['Low']),
             )
 
+            logger.debug(dto)
             producer.produce("stock-quotes", json.dumps(asdict(dto)))
             time.sleep(1)
 
