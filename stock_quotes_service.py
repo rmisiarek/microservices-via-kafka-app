@@ -8,6 +8,7 @@ import time
 from csv import DictReader
 from dataclasses import asdict
 from datetime import datetime
+from typing import Tuple
 
 from confluent_kafka import Producer
 
@@ -32,13 +33,14 @@ signal.signal(signal.SIGINT, stop_producer)
 signal.signal(signal.SIGTERM, stop_producer)
 
 
-def parse_date(date: str) -> str:
-    """Format date."""
+def parse_date(date: str) -> Tuple[str, float]:
+    """Format date to string and milliseconds since epoch."""
 
     original_dt = datetime.strptime(date, '%m/%d/%Y')
-    formatted_dt = original_dt.strftime('%d.%m.%y')
+    date_milliseconds = original_dt.timestamp() * 1000
+    date_string = original_dt.strftime('%d.%m.%y')
 
-    return formatted_dt
+    return date_string, date_milliseconds
 
 
 def parse_price(price: str) -> float:
@@ -53,13 +55,15 @@ def start_producer():
     with open('stock-quotes-tesla.csv', newline='') as csv_file:
         dict_reader = DictReader(csv_file)
         for row in dict_reader:
+            date_string, date_milliseconds = parse_date(row['Date'])
             dto = StockQuote(
-                date=parse_date(row['Date']),
+                date_string=date_string,
+                date_milliseconds=date_milliseconds,
                 volume=int(row['Volume']),
                 open_price=parse_price(row['Open']),
                 close_price=parse_price(row['Close']),
                 high_price=parse_price(row['High']),
-                low_proce=parse_price(row['Low']),
+                low_price=parse_price(row['Low']),
             )
 
             producer.produce("stock-quotes", json.dumps(asdict(dto)))
