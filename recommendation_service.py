@@ -1,10 +1,14 @@
 """Consumer service, it generate buy/sell recomendations."""
 
 import json
-from typing import Final
+import logging
+from typing import Dict, Final
 
 from base import Service
 from settings import PRODUCER_CONFIG, RECOMMENDATION_SERVICE_CONFIG
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class RecommendationService(Service):
@@ -15,19 +19,23 @@ class RecommendationService(Service):
     _quotes: list[float] = []
 
     AVERAGE_HOW_MANY_DAYS: Final[int] = 5
-    RECOMMENDATION_BUY: Final[str] = "BUY"
-    RECOMMENDATION_SELL: Final[str] = "SELL"
+    RECOMMENDATION_BUY: Dict = {'y': 1, 'color': 'green'}
+    RECOMMENDATION_SELL: Dict = {'y': -1, 'color': 'red'}
 
     def process_message(self, message):
         """Process message and generate response with recommendation."""
 
         msg = json.loads(message.value())
         recommendation = self.check_recommendation(close_price=msg['close_price'])
-        response = {'recommendation': recommendation}
 
-        self.produce_message(topic='recommendations', message=json.dumps(response))
+        if recommendation:
+            logger.debug(recommendation)
+            self.produce_message(
+                topic='recommendations',
+                message=json.dumps({'recommendation': recommendation})
+            )
 
-    def check_recommendation(self, close_price: float) -> str:
+    def check_recommendation(self, close_price: float) -> dict:
         """Generate recommendation."""
 
         self._quotes.append(close_price)
@@ -37,12 +45,12 @@ class RecommendationService(Service):
             self._quotes.pop()
 
         if self.average_price:
-            if self.average_price >= close_price:
+            if close_price >= self.average_price:
                 return self.RECOMMENDATION_BUY
 
             return self.RECOMMENDATION_SELL
 
-        return "N/A"
+        return {}
 
 
 def start_service():
