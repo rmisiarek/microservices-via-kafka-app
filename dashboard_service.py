@@ -7,7 +7,6 @@ import typing
 import uvicorn
 from aiokafka import AIOKafkaConsumer
 from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
 from starlette.endpoints import WebSocketEndpoint
 
 import settings
@@ -16,30 +15,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-
-
-HTML = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>app</title>
-    </head>
-    <body>
-        <script>
-            var ws = new WebSocket("ws://localhost:8000/ws");
-            ws.onmessage = function(event) {
-                console.log(event.data)
-            };
-        </script>
-    </body>
-</html>
-"""
-
-
-@app.get("/")
-async def index():
-    """Serve base HTML."""
-    return HTMLResponse(HTML)
 
 
 @app.websocket_route("/ws")
@@ -52,7 +27,7 @@ class DashboardWebsocketService(WebSocketEndpoint):
 
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
-        await websocket.send_json({"Message": "connected"})
+        await websocket.send_json({"message": "connected"})
 
         loop = asyncio.get_event_loop()
         self.consumer = AIOKafkaConsumer(
@@ -93,6 +68,8 @@ class DashboardWebsocketService(WebSocketEndpoint):
         """Send message by WebSocket."""
         while True:
             data = await self.consume(self.consumer, topicname)
+            logger.debug(data)
+
             await websocket.send_text(data)
 
     @staticmethod
