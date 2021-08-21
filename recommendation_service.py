@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Dict, Final
+from typing import Any, Dict, Final
 
 from base import Service
 from settings import PRODUCER_CONFIG, RECOMMENDATION_SERVICE_CONFIG
@@ -19,8 +19,8 @@ class RecommendationService(Service):
     _quotes: list[float] = []
 
     AVERAGE_HOW_MANY_DAYS: Final[int] = 5
-    RECOMMENDATION_BUY: Dict = {'y': 1, 'color': 'green'}
-    RECOMMENDATION_SELL: Dict = {'y': -1, 'color': 'red'}
+    RECOMMENDATION_BUY: Dict[str, Any] = {'y': 1, 'color': 'green'}
+    RECOMMENDATION_SELL: Dict[str, Any] = {'y': -1, 'color': 'red'}
 
     def process_message(self, message):
         """Process message and generate response with recommendation."""
