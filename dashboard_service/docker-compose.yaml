@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  dashboard:
+    build:
+      context: .
+    restart: unless-stopped
+    networks:
+      - app-lab
+    ports:
+      - "8000:8000"
+
+networks:
+  app-lab:
+    external: true
