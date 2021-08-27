@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  recommendation:
+    build:
+      context: .
+    restart: unless-stopped
+    networks:
+      - app-lab
+
+networks:
+  app-lab:
+    external: true

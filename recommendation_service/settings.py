@@ -1,6 +1,7 @@
 """Settings for producer and consumer."""
 
-BROKER = "0.0.0.0:9092"
+# BROKER = "localhost:9092"
+BROKER = "broker:29092"  # when use Docker
 
 RECOMMENDATION_SERVICE_CONFIG = {
     'bootstrap.servers': BROKER,
