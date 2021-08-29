@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  broker:
+    image: confluentinc/cp-kafka:6.2.0
+    hostname: broker
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_LISTENERS: 'CONNECTIONS_FROM_HOST://:9092,PLAINTEXT://:29092,CONTROLLER://:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'CONNECTIONS_FROM_HOST://localhost:9092,PLAINTEXT://broker:29092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'CONNECTIONS_FROM_HOST'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+    volumes:
+      - ./kafka_run.sh:/tmp/kafka_run.sh
+    command: "bash -c '/tmp/kafka_run.sh && /etc/confluent/docker/run'"
+    networks:
+      - app-lab
+
+  dashboard:
+    build:
+      context: ./dashboard_service
+    depends_on:
+      - broker
+    restart: unless-stopped
+    networks:
+      - app-lab
+    ports:
+      - "8000:8000"
+
+  recommendation:
+    build:
+      context: ./recommendation_service
+    depends_on:
+      - broker
+    restart: unless-stopped
+    networks:
+      - app-lab
+
+  stock-quotes:
+    build:
+      context: ./stock_quotes_service
+    depends_on:
+      - broker
+    restart: unless-stopped
+    networks:
+      - app-lab
+
+# network needs to be created manually, by:
+#  docker network create app-lab
+networks:
+  app-lab:
+    external: true
