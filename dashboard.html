@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Kafka & FastAPI App</title>
+    <!-- <link rel="stylesheet" href="" /> -->
+
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/data.js"></script>
+  </head>
+
+  <body>
+    <div id="stock_quotes_chart" style="height:65vh;"></div>
+    <div id="recommendation_chart" style="height:30vh;"></div>
+
+    <script>
+        let ws = new WebSocket("ws://0.0.0.0:8000/ws");
+        let stock_quotes_chart;
+        let recommendation_chart;
+
+        window.addEventListener('load', function () {
+            stock_quotes_chart = Highcharts.stockChart('stock_quotes_chart', {
+                rangeSelector: {
+                    enabled: false
+                },
+                navigator: {
+                    enabled: false
+                },
+                scrollbar: {
+                    enabled: false
+                },
+                title: {
+                    enabled: false,
+                },
+                series: [{
+                    type: 'candlestick',
+                    data:  [],
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }]
+            });
+
+            recommendation_chart = Highcharts.chart('recommendation_chart', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Buy or Sell?'
+                },
+                legend: {
+                    enabled: false
+                },
+                xAxis: {
+                    labels: {
+                        enabled: false
+                    }
+                },
+                yAxis: {
+                    min: -1,
+                    max: 1,
+                    title: {
+                        enabled: false
+                    }
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    data: []
+                }]
+            });
+
+            ws.onmessage = function(event) {
+                let data = JSON.parse(event.data)
+                if (data["message"] === "connected") {
+                    return
+                }
+
+                if (data['recommendation']) {
+                    recommendation_chart.series[0].addPoint(data['recommendation'], true, false);
+                } else {
+                    let stock_quotes_point = [
+                        data['date_milliseconds'],
+                        data['open_price'],
+                        data['high_price'],
+                        data['low_price'],
+                        data['close_price'],
+                    ]
+                    stock_quotes_chart.series[0].addPoint(stock_quotes_point, true, false);
+                }
+            };
+        });
+    </script>
+  </body>
+</html>
