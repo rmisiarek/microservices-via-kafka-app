@@ -24,9 +24,7 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-The project - [microservices-via-kafka-app](https://github.com/rmisiarek/microservices-via-kafka-app) - started with a few ideas in mind:
+[The project](https://github.com/rmisiarek/microservices-via-kafka-app) started with a few ideas in mind:
 * []() Build simple application for learning Kubernetes.
 * []() Learn how Apache Kafka might be used for communication between microservices.
 * []() Test Python libraries for Apache Kafka.
@@ -37,13 +35,13 @@ The project - [microservices-via-kafka-app](https://github.com/rmisiarek/microse
 ### Built With
 
 * []() ***Python 3.9***
-* []() Apache Kafka without Zookeeper (KRaft mode)
-* []() Docker and docker-compose
+* []() Apache Kafka without Zookeeper (KRaft mode).
+* []() Docker and docker-compose.
 * []() Python libraries for Kafka:
   * []() confluent-kafka
   * []() aiokafka
-* []() FastAPI & Uvicorn
-* []() Poetry as dependency manager
+* []() FastAPI & Uvicorn.
+* []() Poetry as dependency manager.
 
 
 ## Getting Started
@@ -75,9 +73,9 @@ This project requires Docker and docker-compose installed on your system. Please
 
 The project consists of four services:
 * Stock-Quotes-Service - reads sample stock quotes data from file and then - by using Kafka - send them to Recommendation-Service and Dashboard-Service.
-* Recommendation-Service - receives message from Stock-Quotes-Service with data about HLOC prices in one point in time and calculates average price from last five records. If current price is above average it is signal to buy, if not sell recommendation is generated. Message with recommendation is send to Dashboard-Service.
+* Recommendation-Service - receives message from Stock-Quotes-Service with data about HLOC prices in one point in time and calculates average price from last five records. If current price is above average it is signal to buy, if not sell recommendation is generated. Then message with recommendation is send to Dashboard-Service.
 * Dashboard-Service - receives messages from both Stock-Quotes-Service (to present price changes over time) and Recommendation-Service (to present buy/sell recommendation).
-* Broker - Kafka service used to microservices orchestration.
+* Broker - Kafka service used for microservices orchestration.
 
 
 ## Contributing
