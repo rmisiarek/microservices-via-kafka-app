@@ -24,6 +24,8 @@
 
 ## About The Project
 
+![](screenshot.png)
+
 [The project](https://github.com/rmisiarek/microservices-via-kafka-app) started with a few ideas in mind:
 * []() Build simple application for learning Kubernetes.
 * []() Learn how Apache Kafka might be used for communication between microservices.
