@@ -44,7 +44,7 @@ class RecommendationService(Service):
 
         if len(self._quotes) == self.AVERAGE_HOW_MANY_DAYS:
             self.average_price = sum(self._quotes) / self.AVERAGE_HOW_MANY_DAYS
-            self._quotes.pop()
+            self._quotes.pop(0)
 
         if self.average_price:
             if close_price >= self.average_price:
